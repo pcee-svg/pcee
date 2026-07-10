@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Avisos - PCEE</title>
+<meta name="theme-color" content="#1a5b9e">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PCEE">
+<style>
+  :root {
+    --blau: #1a5b9e;
+    --blau-fosc: #0f3a66;
+    --blau-clar: #e8f1fa;
+    --gris: #5a6570;
+    --vermell: #e0433c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(180deg, var(--blau-clar) 0%, #ffffff 220px);
+    min-height: 100vh;
+    color: #1c1c1c;
+    padding-bottom: 40px;
+  }
+  header {
+    padding: 24px 20px 20px;
+    text-align: center;
+    position: relative;
+  }
+  .back-link {
+    position: absolute;
+    left: 16px;
+    top: 26px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--blau);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .back-link svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--blau);
+  }
+  header h1 {
+    font-size: 1.25rem;
+    color: var(--blau-fosc);
+    font-weight: 700;
+    line-height: 1.3;
+    margin-top: 6px;
+  }
+  header p {
+    margin-top: 6px;
+    font-size: 0.9rem;
+    color: var(--gris);
+  }
+  main {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 8px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .avis {
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px 18px;
+    box-shadow: 0 2px 10px rgba(15,58,102,0.08);
+    border: 1px solid rgba(26,91,158,0.08);
+    border-left: 4px solid var(--blau);
+    position: relative;
+  }
+  .avis.urgent {
+    border-left-color: var(--vermell);
+  }
+  .avis.no-llegit::after {
+    content: "";
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--vermell);
+  }
+  .avis .data {
+    font-size: 0.76rem;
+    color: var(--gris);
+    margin-bottom: 4px;
+  }
+  .avis h2 {
+    font-size: 1.02rem;
+    color: var(--blau-fosc);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .avis p {
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: #374151;
+  }
+  .buit {
+    text-align: center;
+    color: var(--gris);
+    margin-top: 60px;
+    font-size: 0.92rem;
+  }
+  footer {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 0.75rem;
+    color: #a3adb8;
+    padding: 0 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back-link" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    Inici
+  </a>
+  <h1>Avisos i comunicats</h1>
+  <p>Últimes novetats del Pla Català d'Esport a l'Escola</p>
+</header>
+
+<main id="llista-avisos">
+  <div class="buit">Carregant avisos...</div>
+</main>
+
+<footer>Pla Català d'Esport a l'Escola · Generalitat de Catalunya</footer>
+
+<script>
+const CLAU_VIST = "pcee_avisos_vistos";
+
+function getVistos() {
+  try { return JSON.parse(localStorage.getItem(CLAU_VIST) || "[]"); }
+  catch (e) { return []; }
+}
+
+function marcarVist(id) {
+  const vistos = getVistos();
+  if (!vistos.includes(id)) {
+    vistos.push(id);
+    localStorage.setItem(CLAU_VIST, JSON.stringify(vistos));
+  }
+}
+
+function formatData(dataStr) {
+  const d = new Date(dataStr);
+  return d.toLocaleDateString('ca-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+async function carregarAvisos() {
+  const cont = document.getElementById('llista-avisos');
+  try {
+    const resp = await fetch('avisos.json', { cache: "no-store" });
+    const dades = await resp.json();
+    const vistosAbans = getVistos();
+
+    const actius = dades
+      .filter(a => a.actiu)
+      .sort((a, b) => new Date(b.data) - new Date(a.data));
+
+    if (actius.length === 0) {
+      cont.innerHTML = '<div class="buit">No hi ha avisos actius en aquest moment.</div>';
+      return;
+    }
+
+    cont.innerHTML = actius.map(a => {
+      const noLlegit = !vistosAbans.includes(a.id);
+      const urgentClass = a.prioritat === 'urgent' ? ' urgent' : '';
+      const noLlegitClass = noLlegit ? ' no-llegit' : '';
+      return `
+        <div class="avis${urgentClass}${noLlegitClass}">
+          <div class="data">${formatData(a.data)}</div>
+          <h2>${a.titol}</h2>
+          <p>${a.text}</p>
+        </div>`;
+    }).join('');
+
+    actius.forEach(a => marcarVist(a.id));
+
+  } catch (e) {
+    cont.innerHTML = '<div class="buit">No s\'han pogut carregar els avisos. Torna-ho a provar més tard.</div>';
+  }
+}
+
+carregarAvisos();
+</script>
+
+</body>
+</html>
