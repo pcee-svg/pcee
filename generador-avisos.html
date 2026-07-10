@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador d'avisos - PCEE</title>
+<style>
+  :root {
+    --blau: #1a5b9e;
+    --blau-fosc: #0f3a66;
+    --blau-clar: #e8f1fa;
+    --gris: #5a6570;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(180deg, var(--blau-clar) 0%, #ffffff 220px);
+    margin: 0;
+    padding: 24px 16px 60px;
+    color: #1c1c1c;
+  }
+  .wrap { max-width: 520px; margin: 0 auto; }
+  h1 { font-size: 1.3rem; color: var(--blau-fosc); margin-bottom: 4px; }
+  p.sub { color: var(--gris); font-size: 0.9rem; margin-bottom: 24px; }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(15,58,102,0.08);
+    border: 1px solid rgba(26,91,158,0.08);
+    margin-bottom: 18px;
+  }
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--blau-fosc);
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+  label:first-child { margin-top: 0; }
+  input[type=text], input[type=date], textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d3dbe4;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 80px; }
+  .radios { display: flex; gap: 16px; margin-top: 6px; }
+  .radios label { display: flex; align-items: center; gap: 6px; font-weight: 400; margin: 0; font-size: 0.9rem; color: #333; }
+  button {
+    width: 100%;
+    background: var(--blau);
+    color: #fff;
+    border: none;
+    padding: 13px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-top: 20px;
+    cursor: pointer;
+  }
+  button:active { transform: scale(0.99); }
+  .resultat {
+    margin-top: 20px;
+    display: none;
+  }
+  .resultat.show { display: block; }
+  pre {
+    background: #0f3a66;
+    color: #eaf1fb;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .copiar-btn {
+    background: #fff;
+    color: var(--blau);
+    border: 1.5px solid var(--blau);
+    margin-top: 10px;
+  }
+  .instruccions {
+    font-size: 0.85rem;
+    color: var(--gris);
+    line-height: 1.5;
+    margin-top: 10px;
+  }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--blau-fosc);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s, transform .2s;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Generador d'avisos PCEE</h1>
+  <p class="sub">Omple el formulari i copia el resultat dins de <strong>avisos.json</strong> a GitHub. Aquesta pàgina no publica res per si sola, només et prepara el text.</p>
+
+  <div class="card">
+    <label>Títol de l'avís</label>
+    <input type="text" id="titol" placeholder="Ex: Obertura del període d'inscripcions">
+
+    <label>Text del comunicat</label>
+    <textarea id="text" placeholder="Escriu aquí el missatge complet..."></textarea>
+
+    <label>Data</label>
+    <input type="date" id="data">
+
+    <label>Prioritat</label>
+    <div class="radios">
+      <label><input type="radio" name="prioritat" value="normal" checked> Normal</label>
+      <label><input type="radio" name="prioritat" value="urgent"> Urgent</label>
+    </div>
+
+    <button onclick="generar()">Generar el bloc per a avisos.json</button>
+  </div>
+
+  <div class="card resultat" id="resultat">
+    <label style="margin-top:0;">Copia això i enganxa-ho a l'inici de la llista dins de avisos.json:</label>
+    <pre id="sortida"></pre>
+    <button class="copiar-btn" onclick="copiar()">Copiar al porta-retalls</button>
+    <p class="instruccions">
+      Recorda: si aquest no és el primer avís de la llista, has d'afegir una
+      coma <code>,</code> just després de la clau <code>}</code> d'aquest bloc
+      per separar-lo del següent.
+    </p>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copiat!</div>
+
+<script>
+  // Data d'avui per defecte
+  document.getElementById('data').value = new Date().toISOString().split('T')[0];
+
+  function escapar(text) {
+    return text.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+  }
+
+  function generar() {
+    const titol = document.getElementById('titol').value.trim();
+    const text = document.getElementById('text').value.trim();
+    const data = document.getElementById('data').value;
+    const prioritat = document.querySelector('input[name=prioritat]:checked').value;
+
+    if (!titol || !text || !data) {
+      alert('Omple el títol, el text i la data abans de generar l\'avís.');
+      return;
+    }
+
+    const id = data + '-' + Math.floor(Math.random() * 900 + 100);
+
+    const bloc =
+`{
+  "id": "${id}",
+  "data": "${data}",
+  "titol": "${escapar(titol)}",
+  "text": "${escapar(text)}",
+  "prioritat": "${prioritat}",
+  "actiu": true
+}`;
+
+    document.getElementById('sortida').textContent = bloc;
+    document.getElementById('resultat').classList.add('show');
+    document.getElementById('resultat').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  async function copiar() {
+    const contingut = document.getElementById('sortida').textContent;
+    try {
+      await navigator.clipboard.writeText(contingut);
+      mostrarToast();
+    } catch (e) {
+      alert('No s\'ha pogut copiar automàticament. Selecciona el text manualment.');
+    }
+  }
+
+  function mostrarToast() {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+</script>
+</body>
+</html>
