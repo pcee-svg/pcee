@@ -13,6 +13,8 @@
     --blau-fosc: #0f3a66;
     --blau-clar: #e8f1fa;
     --gris: #5a6570;
+    --taronja: #fce4d6;
+    --taronja-text: #b45309;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -37,71 +39,95 @@
     text-decoration: none;
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
   }
   header a.back svg { width: 22px; height: 22px; stroke: #fff; }
-  header h1 {
-    color: #fff;
-    font-size: 1.05rem;
-    font-weight: 600;
-  }
-  .search-wrap {
-    max-width: 480px;
-    margin: 14px auto 0;
-    padding: 0 16px;
-  }
+  header h1 { color: #fff; font-size: 1.15rem; font-weight: 700; }
+  .search-wrap { padding: 14px 16px 6px; }
   .search-box {
-    position: relative;
-  }
-  .search-box svg {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 18px;
-    height: 18px;
-    stroke: var(--gris);
-  }
-  .search-box input {
-    width: 100%;
-    padding: 11px 14px 11px 38px;
-    border-radius: 12px;
-    border: 1px solid #dde3e9;
-    font-size: 0.95rem;
     background: #fff;
-    outline: none;
-  }
-  .search-box input:focus {
-    border-color: var(--blau);
-  }
-  main {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 14px 16px 0;
+    border-radius: 12px;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
+  .search-box svg { width: 18px; height: 18px; stroke: var(--gris); flex-shrink: 0; }
+  .search-box input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 0.95rem;
+    background: transparent;
+  }
+  .filters {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px 4px;
+    overflow-x: auto;
+  }
+  .filter-chip {
+    border: 1px solid #d7dee5;
+    background: #fff;
+    color: var(--gris);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  .filter-chip.active {
+    background: var(--blau);
+    border-color: var(--blau);
+    color: #fff;
+  }
+  main { padding: 8px 16px 0; }
   .count {
     font-size: 0.8rem;
     color: var(--gris);
-    padding: 0 2px 2px;
+    padding: 10px 2px 8px;
   }
   .contact-card {
     background: #fff;
     border-radius: 14px;
     padding: 14px 16px;
-    box-shadow: 0 2px 8px rgba(15,58,102,0.06);
-    border: 1px solid rgba(26,91,158,0.07);
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border-left: 4px solid var(--blau);
   }
-  .contact-card h2 {
+  .contact-card.tipus-consell { border-left-color: var(--blau); }
+  .contact-card.tipus-representacio { border-left-color: #2e9e6c; }
+  .contact-card.tipus-comissionat { border-left-color: #d97a1f; }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .card-top h2 {
     font-size: 0.98rem;
     color: var(--blau-fosc);
     font-weight: 700;
-    margin-bottom: 8px;
     letter-spacing: 0.2px;
+  }
+  .badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .badge.tipus-consell { background: var(--blau-clar); color: var(--blau-fosc); }
+  .badge.tipus-representacio { background: #e1f5ea; color: #1f6b48; }
+  .badge.tipus-comissionat { background: var(--taronja); color: var(--taronja-text); }
+  .territori-tag {
+    font-size: 0.75rem;
+    color: var(--gris);
+    margin-bottom: 8px;
   }
   .contact-row {
     display: flex;
@@ -126,7 +152,7 @@
   .contact-row .label {
     color: var(--gris);
     font-size: 0.78rem;
-    min-width: 78px;
+    min-width: 62px;
   }
   .no-results {
     text-align: center;
@@ -148,8 +174,15 @@
 <div class="search-wrap">
   <div class="search-box">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-    <input type="text" id="search" placeholder="Cerca consell esportiu o comissionat..." autocomplete="off">
+    <input type="text" id="search" placeholder="Cerca entitat, persona o territori..." autocomplete="off">
   </div>
+</div>
+
+<div class="filters" id="filters">
+  <div class="filter-chip active" data-tipus="Tots">Tots</div>
+  <div class="filter-chip" data-tipus="Representació Territorial">Representació Territorial</div>
+  <div class="filter-chip" data-tipus="Consell Esportiu">Consells Esportius</div>
+  <div class="filter-chip" data-tipus="Comissionat/da PCEE">Comissionats/des PCEE</div>
 </div>
 
 <main>
@@ -158,8 +191,9 @@
 </main>
 
 <script>
-const contactes = [{"Consell": "CEEB", "Email": "informaciogeneral@ceeb.cat", "Comissionat": "Jordi Brasó", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900 Ext. 2665", "Etiquetes": ""}, {"Consell": "ALT PENEDÈS", "Email": "jespe@jespe.org", "Comissionat": "Jordi Brasó", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900 Ext. 2666", "Etiquetes": ""}, {"Consell": "ANOIA", "Email": "consellesportiu@ceanoia.cat", "Comissionat": "Jordi Brasó", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900 Ext. 2667", "Etiquetes": ""}, {"Consell": "BAGES", "Email": "ceb@cebages.info", "Comissionat": "Jonathan Herrera", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900", "Etiquetes": ""}, {"Consell": "BAIX LLOBREGAT", "Email": "cebllob@cebllob.cat", "Comissionat": "Cristina González", "Email comissionat": "cgonzalezp@gencat.cat", "Tfn comissionat": "627482913", "Etiquetes": ""}, {"Consell": "BCN NORD", "Email": "cebn@cebnord.com", "Comissionat": "Jordi Brasó", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900", "Etiquetes": ""}, {"Consell": "HOSPITALET", "Email": "cehospitalet@cehospitalet.org", "Comissionat": "Cristina González", "Email comissionat": "cgonzalezp@gencat.cat", "Tfn comissionat": "627482913", "Etiquetes": ""}, {"Consell": "BERGUEDÀ", "Email": "cebergueda@ucec.cat", "Comissionat": "Jonathan Herrera", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900", "Etiquetes": ""}, {"Consell": "GARRAF", "Email": "cegarraf@cegarraf.cat", "Comissionat": "Jordi Brasó", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900", "Etiquetes": ""}, {"Consell": "MARESME", "Email": "cemaresme@cemaresme.cat", "Comissionat": "Carol Sánchez", "Email comissionat": "carolinasanchezg@gencat.cat", "Tfn comissionat": "934006900 Ext. 3949", "Etiquetes": ""}, {"Consell": "OSONA", "Email": "ceosona@ceosona.com", "Comissionat": "Jonathan Herrera", "Email comissionat": "jonathanfabrizioherrera@gencat.cat", "Tfn comissionat": "934006900 Ext. 2694", "Etiquetes": ""}, {"Consell": "VO TERRASSA", "Email": "consell.esportiu@ceterrassa.cat", "Comissionat": "Cristina González", "Email comissionat": "cgonzalezp@gencat.cat", "Tfn comissionat": "627482913", "Etiquetes": ""}, {"Consell": "VO SABADELL", "Email": "consell@consellsabadell.cat", "Comissionat": "Cristina González", "Email comissionat": "cgonzalezp@gencat.cat", "Tfn comissionat": "627482914", "Etiquetes": ""}, {"Consell": "VO SUD", "Email": "cevos@cevoscerdanyola.cat", "Comissionat": "Cristina González", "Email comissionat": "cgonzalezp@gencat.cat", "Tfn comissionat": "627482915", "Etiquetes": ""}, {"Consell": "V ORIENTAL", "Email": "cevo@cevo.cat", "Comissionat": "Carol Sánchez", "Email comissionat": "carolinasanchezg@gencat.cat", "Tfn comissionat": "934006900 Ext. 3949", "Etiquetes": ""}, {"Consell": "ALT CAMP", "Email": "ce@altcamp.cat", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116926", "Etiquetes": ""}, {"Consell": "BAIX CAMP", "Email": "cebc@cebc.cat", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116927", "Etiquetes": ""}, {"Consell": "BAIX PENEDÈS", "Email": "cebaixpenedes@cebp.cat", "Comissionat": "Jordi Brasó", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900", "Etiquetes": ""}, {"Consell": "CONCA DE BARBERÀ", "Email": "ce.conca@tinet.fut.es", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116926", "Etiquetes": ""}, {"Consell": "TARRAGONÈS", "Email": "info@cetarragones.cat", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116927", "Etiquetes": ""}, {"Consell": "BAIX EBRE", "Email": "consell.esportiu@baixebre.cat", "Comissionat": "Jonathan Herrera", "Email comissionat": "jonathanfabrizioherrera@gencat.cat", "Tfn comissionat": "934006900 Ext. 2694", "Etiquetes": ""}, {"Consell": "MONTSIÀ", "Email": "cemontsia@cemontsia.cat", "Comissionat": "Jordi Brasó", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900", "Etiquetes": ""}, {"Consell": "RIBERA D'EBRE", "Email": "cesportiu@riberaebre.org", "Comissionat": "Jordi Brasó", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006901", "Etiquetes": ""}, {"Consell": "TERRA ALTA", "Email": "conespta@tinet.org", "Comissionat": "Jordi Brasó", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006902", "Etiquetes": ""}, {"Consell": "ALTA RIBAGORÇA", "Email": "cealtaribagor@ucec.cat", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116926", "Etiquetes": ""}, {"Consell": "ALT URGELL", "Email": "cealturgell@ucec.cat", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116927", "Etiquetes": ""}, {"Consell": "GARRIGUES", "Email": "esports@garrigues.cat", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116928", "Etiquetes": ""}, {"Consell": "NOGUERA", "Email": "consellesportiu@ccnoguera.cat", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116929", "Etiquetes": ""}, {"Consell": "PALLARS JUSSÀ", "Email": "cepjussa@pallars.com", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116930", "Etiquetes": ""}, {"Consell": "PALLARS SOBIRÀ", "Email": "cepallarssobira@gmail.com", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116931", "Etiquetes": ""}, {"Consell": "PLA D'URGELL", "Email": "ceplaurgell@gmail.com", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116932", "Etiquetes": ""}, {"Consell": "SEGARRA", "Email": "consellesportiu@ccsegarra.cat", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116933", "Etiquetes": ""}, {"Consell": "SEGRIÀ", "Email": "cesegria@gmail.com", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116934", "Etiquetes": ""}, {"Consell": "SOLSONÈS", "Email": "cesolsones@ucec.cat", "Comissionat": "Jonathan Herrera", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900", "Etiquetes": ""}, {"Consell": "URGELL", "Email": "ceurgell@gmail.com", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "667116926", "Etiquetes": ""}, {"Consell": "VAL D'ARAN", "Email": "cevaldaran@ucec.cat", "Comissionat": "Lluís Sandiumenge", "Email comissionat": "lluissandiumenge@gencat.cat", "Tfn comissionat": "", "Etiquetes": ""}, {"Consell": "ALT EMPORDÀ", "Email": "consellesportiu@cealtemporda.cat", "Comissionat": "Chus Valdés", "Email comissionat": "mjesusvaldesa@gencat.cat", "Tfn comissionat": "934006900 Ext. 2695", "Etiquetes": ""}, {"Consell": "BAIX EMPORDÀ", "Email": "esports@baixemporda.cat", "Comissionat": "Chus Valdés", "Email comissionat": "mjesusvaldesa@gencat.cat", "Tfn comissionat": "934006900 Ext. 2695", "Etiquetes": ""}, {"Consell": "CERDANYA", "Email": "esport@cerdanya.org", "Comissionat": "Jordi Brasó", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900 Ext.2665", "Etiquetes": ""}, {"Consell": "GARROTXA", "Email": "consell@cegarrotxa.cat", "Comissionat": "Jordi Brasó", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900 Ext.2665", "Etiquetes": ""}, {"Consell": "GIRONÈS", "Email": "administracio@cegirones.cat", "Comissionat": "Chus Valdés", "Email comissionat": "mjesusvaldesa@gencat.cat", "Tfn comissionat": "934006900 Ext. 2695", "Etiquetes": ""}, {"Consell": "PLA DE L'ESTANY", "Email": "consellesportiu@ceplaestany.cat", "Comissionat": "Jordi Brasó", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900Ext. 2665", "Etiquetes": ""}, {"Consell": "RIPOLLÈS", "Email": "consellesportiu@ceripolles.cat", "Comissionat": "Jordi Brasó", "Email comissionat": "jbraso@xtec.cat", "Tfn comissionat": "934006900 Ext.2665", "Etiquetes": ""}, {"Consell": "SELVA", "Email": "info@selvaesports.cat", "Comissionat": "Chus Valdés", "Email comissionat": "mjesusvaldesa@gencat.cat", "Tfn comissionat": "934006900 Ext. 2695", "Etiquetes": ""}]
-;
+const contactes = [{"Tipus": "Representació Territorial", "Entitat": "Representant Territorial de l'Esport a Girona", "Nom": "Narcís Casassa Font", "Tfn": "972975150", "Mail": "narciscasassa@gencat.cat", "Territori": "Girona"}, {"Tipus": "Representació Territorial", "Entitat": "Representant Territorial de l'Esport a Girona (Tècnic/a)", "Nom": "Júlia Ribas i Solés", "Tfn": "972975150", "Mail": "juliaribas@gencat.cat", "Territori": "Girona"}, {"Tipus": "Representació Territorial", "Entitat": "Representant Territorial de l'Esport a Lleida", "Nom": "Xavier Serratosa Donato", "Tfn": "973032975", "Mail": "xavierserratosa@gencat.cat", "Territori": "Lleida"}, {"Tipus": "Representació Territorial", "Entitat": "Representant Territorial de l'Esport a Lleida (Tècnic/a)", "Nom": "Ivan Espilez", "Tfn": "973032975", "Mail": "iespilez@gencat.cat", "Territori": "Lleida"}, {"Tipus": "Representació Territorial", "Entitat": "Representant Territorial de l'Esport a Tarragona", "Nom": "Estefania Serrano Agudo", "Tfn": "977251494", "Mail": "estefaniaserrano@gencat.cat", "Territori": "Tarragona"}, {"Tipus": "Representació Territorial", "Entitat": "Representant Territorial de l'Esport a Tarragona (Tècnic/a)", "Nom": "Pau Papasseit", "Tfn": "977251494", "Mail": "paupapasseit@gencat.cat", "Territori": "Tarragona"}, {"Tipus": "Representació Territorial", "Entitat": "Representant Territorial de l'Esport a Terres de l'Ebre", "Nom": "Montserrat Pegueroles Margalef", "Tfn": "977448230", "Mail": "montserrat.pegueroles@gencat.cat", "Territori": "Terres de l'Ebre"}, {"Tipus": "Representació Territorial", "Entitat": "Representant Territorial de l'Esport a Terres de l'Ebre (Tècnic/a)", "Nom": "Cristian Ventura", "Tfn": "977448231", "Mail": "cristianventura@gencat.cat", "Territori": "Terres de l'Ebre"}, {"Tipus": "Representació Territorial", "Entitat": "Representant Territorial de l'Esport a Barcelona", "Nom": "César  Thovar Pérez", "Tfn": "933035990", "Mail": "cesarthovar@gencat.cat", "Territori": "Barcelona"}, {"Tipus": "Representació Territorial", "Entitat": "Representant Territorial de l'Esport a Barcelona (Tècnic/a)", "Nom": "Francesc  Forcada", "Tfn": "933035990", "Mail": "francescforcada@gencat.cat", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu CEEB", "Nom": "Sònia Sanchez", "Tfn": "673654597", "Mail": "ssanchez@ceeb.cat", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Alt Penedès", "Nom": "Pep Besolí", "Tfn": "680 99 53 11", "Mail": "besoli@jespe.org", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Anoia", "Nom": "Anna Mas", "Tfn": "699155940", "Mail": "anna@ceanoia.cat", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Bages", "Nom": "Ferran Tarazona", "Tfn": "938721917", "Mail": "ceb@cebages.info", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Baix Llobregat", "Nom": "Núria Partida Gamez", "Tfn": "648477579", "Mail": "pcee@cebllob.cat", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu BCN Nord", "Nom": "Carlos Sala", "Tfn": "933996496", "Mail": "secretaria@cebnord.com", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Hospitalet", "Nom": "Mariano García", "Tfn": "673339021", "Mail": "marianogarcia@cehospitalet.org", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Berguedà", "Nom": "Cristina Solà Garcia", "Tfn": "609959008", "Mail": "cebergueda@ucec.cat", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Garraf", "Nom": "Rubén Martín-Mora", "Tfn": "621255160", "Mail": "cegarraf@cegarraf.cat", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Maresme", "Nom": "David Casas", "Tfn": "937570139", "Mail": "david@cemaresme.cat", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Osona", "Nom": "Lluis Franch", "Tfn": "664082374", "Mail": "lluis@ceosona.com", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu VO Terrassa", "Nom": "Olga López", "Tfn": "937352876", "Mail": "olga@ceterrassa.cat", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu VO Sabadell", "Nom": "Alfons López Laredo", "Tfn": "935135290", "Mail": "alfons@consellsabadell.cat", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu VO Sud", "Nom": "Juanma Velázquez", "Tfn": "638770663", "Mail": "juanma@cevoscerdanyola.cat", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu V Oriental", "Nom": "Jordi Jorba", "Tfn": "669225031", "Mail": "cevo@cevo.cat", "Territori": "Barcelona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Alt Camp", "Nom": "Jordi Contijoch", "Tfn": "692677435", "Mail": "jcontijoch@altcamp.cat", "Territori": "Tarragona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Baix Camp", "Nom": "Teresa Cousillas / Joan Bartili", "Tfn": "977334063", "Mail": "tcousillas@cebc.cat,jbartoli@cebc.cat", "Territori": "Tarragona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Baix Penedès", "Nom": "Gemma Santacana", "Tfn": "626141322", "Mail": "gsantacana@cebp.cat", "Territori": "Tarragona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Conca De Barberà", "Nom": "Ramon Meroño Cagello", "Tfn": "649763128", "Mail": "merono@xtec.cat", "Territori": "Tarragona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Tarragonès", "Nom": "Marc Sangüesa Vidal", "Tfn": "977249484", "Mail": "msanguesa@cetarragones.cat", "Territori": "Tarragona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Baix Ebre", "Nom": "Joaquim Rambla Manzano", "Tfn": "600581781", "Mail": "consell.esportiu@baixebre.cat", "Territori": "Terres de l'Ebre"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Montsià", "Nom": "Miquel Perez", "Tfn": "659956244", "Mail": "mpere367@xtec.cat", "Territori": "Terres de l'Ebre"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Ribera d'Ebre", "Nom": "Maria Bordera", "Tfn": "626392474", "Mail": "cesportiu@riberaebre.org", "Territori": "Terres de l'Ebre"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Terra Alta", "Nom": "Mireia de la Torre", "Tfn": "691 849 678", "Mail": "conespta@tinet.org", "Territori": "Terres de l'Ebre"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Alta Ribagorça", "Nom": "A determinar", "Tfn": "934510869", "Mail": "cealtaribagor@ucec.cat", "Territori": "Lleida"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Alt Urgell", "Nom": "Sergi Teba/Marc Isern", "Tfn": "679483625", "Mail": "cealturgell@ucec.cat", "Territori": "Lleida"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Garrigues", "Nom": "Carles Gelonch", "Tfn": "973142658", "Mail": "esports@garrigues.cat", "Territori": "Lleida"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Noguera", "Nom": "Lorena Botanch Bravo", "Tfn": "973450178", "Mail": "consellesportiu@ccnoguera.cat", "Territori": "Lleida"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Pallars Jussà", "Nom": "Josep M. Roy", "Tfn": "973651472", "Mail": "cepjussa@pallars.com", "Territori": "Lleida"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Pallars Sobirà", "Nom": "Dani Sánchez", "Tfn": "679519867", "Mail": "cepallarssobira@gmail.com", "Territori": "Lleida"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Pla d'Urgell", "Nom": "Joan Bota Español", "Tfn": "661264328", "Mail": "ceplaurgell@gmail.com", "Territori": "Lleida"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Segarra", "Nom": "Naufel Essarab", "Tfn": "621225886", "Mail": "consellesportiu@ccsegarra.cat", "Territori": "Lleida"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Segrià", "Nom": "Ramon Gonzalez Franque", "Tfn": "637466698", "Mail": "cesegria@gmail.com", "Territori": "Lleida"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Solsonès", "Nom": "Candi Viladrich Cardona", "Tfn": "676194929", "Mail": "cesolsones@ucec.cat", "Territori": "Lleida"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Urgell", "Nom": "Helena Garcia Pina", "Tfn": "650910165", "Mail": "ceurgell@gmail.com", "Territori": "Lleida"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Val d'Aran", "Nom": "Mar Puig", "Tfn": "619504842", "Mail": "cevaldaran@ucec.cat", "Territori": "Lleida"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Alt Empordà", "Nom": "Ingrid Marimon", "Tfn": "699 06 07 51", "Mail": "activitats@cealtemporda.cat", "Territori": "Girona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Baix Empordà", "Nom": "Xavier Gamero Bertran", "Tfn": "619538433", "Mail": "XGamero@baixemporda.cat", "Territori": "Girona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Cerdanya", "Nom": "Ari Botella", "Tfn": "627232433", "Mail": "esport@cerdanya.org", "Territori": "Girona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Garrotxa", "Nom": "Oscar Cabana i Patricia Ganza", "Tfn": "872022064 / 686161014", "Mail": "consell@cegarrotxa.cat", "Territori": "Girona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Gironès", "Nom": "Anna Viana", "Tfn": "627907084", "Mail": "aviana@cegirones.cat", "Territori": "Girona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Pla De l'Estany", "Nom": "Andreu Moreno", "Tfn": "605668998", "Mail": "amoreno@ceplaestany.cat", "Territori": "Girona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Ripollès", "Nom": "Manel Róo", "Tfn": "625422604", "Mail": "consellesportiu@ceripolles.cat", "Territori": "Girona"}, {"Tipus": "Consell Esportiu", "Entitat": "Consell Esportiu Selva", "Nom": "Angel Mullera", "Tfn": "60858472", "Mail": "angel@selvaesports.cat", "Territori": "Girona"}, {"Tipus": "Comissionat/da PCEE", "Entitat": "Comissionat/da PCEE", "Nom": "Cristina González", "Tfn": "627482913", "Mail": "cgonzalezp@gencat.cat", "Territori": "Catalunya"}, {"Tipus": "Comissionat/da PCEE", "Entitat": "Comissionat/da PCEE", "Nom": "Jordi Brasó", "Tfn": "934006900 Ext. 2665", "Mail": "jordibrasor@gencat.cat", "Territori": "Catalunya"}, {"Tipus": "Comissionat/da PCEE", "Entitat": "Comissionat/da PCEE", "Nom": "Carol Sánchez", "Tfn": "934006900 Ext. 3949", "Mail": "carolinasanchezg@gencat.cat", "Territori": "Catalunya"}, {"Tipus": "Comissionat/da PCEE", "Entitat": "Comissionat/da PCEE", "Nom": "Eric Parés", "Tfn": "934006900 Ext.2494", "Mail": "ericpares@gencat.cat", "Territori": "Catalunya"}, {"Tipus": "Comissionat/da PCEE", "Entitat": "Comissionat/da PCEE", "Nom": "Lluís Sandiumenge", "Tfn": "667116926", "Mail": "lluissandiumenge@gencat.cat", "Territori": "Catalunya"}, {"Tipus": "Comissionat/da PCEE", "Entitat": "Comissionat/da PCEE", "Nom": "Jonathan Herrera", "Tfn": "934006900 Ext. 2665", "Mail": "jordibrasor@gencat.cat", "Territori": "Catalunya"}, {"Tipus": "Comissionat/da PCEE", "Entitat": "Comissionat/da PCEE", "Nom": "Chus Valdés", "Tfn": "934006900 Ext. 2695", "Mail": "mjesusvaldesa@gencat.cat", "Territori": "Catalunya"}];
+
+let filtreActiu = "Tots";
 
 function normalitza(text) {
   return (text || '')
@@ -169,10 +203,17 @@ function normalitza(text) {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
+function tipusClass(tipus) {
+  if (tipus === 'Consell Esportiu') return 'tipus-consell';
+  if (tipus === 'Representació Territorial') return 'tipus-representacio';
+  if (tipus === "Comissionat/da PCEE") return 'tipus-comissionat';
+  return '';
+}
+
 function render(llista) {
   const results = document.getElementById('results');
   const count = document.getElementById('count');
-  count.textContent = llista.length + ' consells esportius';
+  count.textContent = llista.length + ' resultats';
 
   if (llista.length === 0) {
     results.innerHTML = '<div class="no-results">No s\'ha trobat cap resultat</div>';
@@ -180,33 +221,32 @@ function render(llista) {
   }
 
   results.innerHTML = llista.map(c => {
-    const tfnHref = (c['Tfn comissionat'] || '').replace(/[^\d+]/g, '');
+    const tfnHref = (c.Tfn || '').replace(/[^\d+]/g, '');
+    const cls = tipusClass(c.Tipus);
     return `
-      <div class="contact-card">
-        <h2>${escapeHtml(c.Consell)}</h2>
-        ${c.Email ? `
-        <div class="contact-row">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
-          <span class="label">Consell:</span>
-          <a href="mailto:${escapeHtml(c.Email)}">${escapeHtml(c.Email)}</a>
-        </div>` : ''}
-        ${c.Comissionat ? `
+      <div class="contact-card ${cls}">
+        <div class="card-top">
+          <h2>${escapeHtml(c.Entitat)}</h2>
+          <span class="badge ${cls}">${escapeHtml(c.Tipus)}</span>
+        </div>
+        <div class="territori-tag">📍 ${escapeHtml(c.Territori)}</div>
+        ${c.Nom ? `
         <div class="contact-row">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span class="label">Comissionat:</span>
-          <span>${escapeHtml(c.Comissionat)}</span>
+          <span class="label">Nom:</span>
+          <span>${escapeHtml(c.Nom)}</span>
         </div>` : ''}
-        ${c['Email comissionat'] ? `
-        <div class="contact-row">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
-          <span class="label">Email:</span>
-          <a href="mailto:${escapeHtml(c['Email comissionat'])}">${escapeHtml(c['Email comissionat'])}</a>
-        </div>` : ''}
-        ${c['Tfn comissionat'] ? `
+        ${c.Tfn ? `
         <div class="contact-row">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           <span class="label">Tel:</span>
-          <a href="tel:${tfnHref}">${escapeHtml(c['Tfn comissionat'])}</a>
+          <a href="tel:${tfnHref}">${escapeHtml(c.Tfn)}</a>
+        </div>` : ''}
+        ${c.Mail ? `
+        <div class="contact-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
+          <span class="label">Email:</span>
+          <a href="mailto:${escapeHtml(c.Mail)}">${escapeHtml(c.Mail)}</a>
         </div>` : ''}
       </div>
     `;
@@ -219,17 +259,31 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-document.getElementById('search').addEventListener('input', (e) => {
-  const q = normalitza(e.target.value);
-  if (!q) {
-    render(contactes);
-    return;
+function aplicaFiltres() {
+  const q = normalitza(document.getElementById('search').value);
+  let llista = contactes;
+  if (filtreActiu !== 'Tots') {
+    llista = llista.filter(c => c.Tipus === filtreActiu);
   }
-  const filtrats = contactes.filter(c =>
-    normalitza(c.Consell).includes(q) ||
-    normalitza(c.Comissionat).includes(q)
-  );
-  render(filtrats);
+  if (q) {
+    llista = llista.filter(c =>
+      normalitza(c.Entitat).includes(q) ||
+      normalitza(c.Nom).includes(q) ||
+      normalitza(c.Territori).includes(q)
+    );
+  }
+  render(llista);
+}
+
+document.getElementById('search').addEventListener('input', aplicaFiltres);
+
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    filtreActiu = chip.dataset.tipus;
+    aplicaFiltres();
+  });
 });
 
 render(contactes);
